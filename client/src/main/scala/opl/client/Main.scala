@@ -1,7 +1,7 @@
 package opl.client
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.vdom.all._
+import opl.client.controllers.LockScreenController
 import org.scalajs.dom
 import org.scalajs.dom.Event
 
@@ -12,7 +12,7 @@ object Main extends JSApp {
   override def main(): Unit = {
 
     dom.onload = (e: Event) => {
-      React.render(h2("Hi from scala"), dom.document.body)
+      React.render(LockScreenController(), dom.document.body)
     }
   }
 }

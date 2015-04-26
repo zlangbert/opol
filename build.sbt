@@ -8,8 +8,12 @@ version in ThisBuild := "0.1.0-SNAPSHOT"
 
 scalaVersion in ThisBuild := "2.11.6"
 
+val shared = project.in(file("shared"))
+  .enablePlugins(ScalaJSPlugin)
+
 val server = project.in(file("server"))
   .enablePlugins(ScalaJSPlugin)
+  .dependsOn(shared)
   .settings(
     (fastOptJS in Compile) := {
       {
@@ -40,28 +44,39 @@ val server = project.in(file("server"))
 
         (fastOptJS in Compile).value.map { f =>
           val js = read(f)
-          f.delete()
-          f.createNewFile()
-          val writer = new PrintWriter(new FileWriter(f))
-          writer.println(bootstrap)
-          writer.println(js)
-          writer.println(launcher)
-          writer.flush()
-          f
+          if (js.contains("addGlobalProps"))
+            f
+          else {
+            f.delete()
+            f.createNewFile()
+            val writer = new PrintWriter(new FileWriter(f))
+            writer.println(bootstrap)
+            writer.println(js)
+            writer.println(launcher)
+            writer.flush()
+            f
+          }
         }
       }
     },
     persistLauncher in Compile := true,
-    persistLauncher in Test := false
+    persistLauncher in Test := false,
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %%% "autowire" % "0.2.5",
+      "com.lihaoyi" %%% "upickle" % "0.2.8"
+    )
   )
 
 val client = project.in(file("client"))
   .enablePlugins(ScalaJSPlugin)
+  .dependsOn(shared)
   .settings(
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "0.8.0",
-      "com.github.japgolly.scalajs-react" %%% "core" % "0.8.3"
+      "com.github.japgolly.scalajs-react" %%% "core" % "0.8.3",
+      "com.lihaoyi" %%% "autowire" % "0.2.5",
+      "com.lihaoyi" %%% "upickle" % "0.2.8"
     )
   )

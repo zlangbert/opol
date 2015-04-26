@@ -1,8 +1,13 @@
 package opl
 
-import scala.scalajs.js
-import js.{JSApp, Dynamic => D, Object => JSObject}
-import D.{global => g}
+import opl.api.Api
+import opl.facades.ipc
+import opl.facades.ipc._
+import opl.util.AutowirePayload
+
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.scalajs.js.Dynamic.{global => g}
+import scala.scalajs.js.{Dynamic => D, JSApp}
 
 object Main extends JSApp {
 
@@ -22,12 +27,23 @@ object Main extends JSApp {
       )
 
       mainWindow.foreach { window =>
-        println("file://" + g.__dirname + "/../../../client/target/scala-2.11/classes/html/index.html")
-        window.loadUrl("file://" + g.__dirname + "/../../../client/target/scala-2.11/classes/html/index.html")
+        window.loadUrl("file://" + g.__dirname +
+          "/../../../client/target/scala-2.11/classes/html/index.html")
         window.on("closed", { () =>
           mainWindow = None
         })
       }
+    })
+
+    val api = new ApiImpl
+    Ipc.on("autowire", (event: ipc.Event, data: Any) => {
+
+        val payload = upickle.read[AutowirePayload](data.toString)
+
+        AutowireServer.route[Api](api)(
+          autowire.Core.Request(payload.path, payload.args)
+        ).foreach(event.sender.send(s"autowire.${payload.id}", _))
+
     })
   }
 }
