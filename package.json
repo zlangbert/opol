@@ -1,0 +1,5 @@
+{
+  "name"    : "your-app",
+  "version" : "0.1.0",
+  "main"    : "server/target/scala-2.11/server-fastopt.js"
+}
