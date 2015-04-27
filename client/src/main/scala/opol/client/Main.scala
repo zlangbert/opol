@@ -1,7 +1,7 @@
-package opl.client
+package opol.client
 
 import japgolly.scalajs.react._
-import opl.client.controllers.LockScreenController
+import opol.client.controllers.LockScreenController
 import org.scalajs.dom
 import org.scalajs.dom.Event
 

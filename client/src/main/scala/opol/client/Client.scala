@@ -1,9 +1,9 @@
-package opl.client
+package opol.client
 
 import java.util.UUID
 
-import opl.client.facades.ipc._
-import opl.util.AutowirePayload
+import opol.client.facades.ipc._
+import opol.util.AutowirePayload
 import upickle._
 
 import scala.concurrent.{Future, Promise}

@@ -1,4 +1,4 @@
-package opl
+package opol
 
 import upickle._
 

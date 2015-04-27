@@ -1,4 +1,4 @@
-package opl.facades
+package opol.facades
 
 import scala.scalajs.js.Dynamic.global
 

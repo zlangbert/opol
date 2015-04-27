@@ -1,4 +1,4 @@
-package opl.client.facades
+package opol.client.facades
 
 import scalajs.js.Dynamic.global
 

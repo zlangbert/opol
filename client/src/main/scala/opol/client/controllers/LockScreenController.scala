@@ -1,10 +1,10 @@
-package opl.client.controllers
+package opol.client.controllers
 
 import autowire._
 import japgolly.scalajs.react._
-import opl.api.Api
-import opl.client.Client
-import opl.client.components.LockScreen
+import opol.api.Api
+import opol.client.Client
+import opol.client.components.LockScreen
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 

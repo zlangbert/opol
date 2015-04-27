@@ -1,9 +1,9 @@
-package opl
+package opol
 
-import opl.api.Api
-import opl.facades.ipc
-import opl.facades.ipc._
-import opl.util.AutowirePayload
+import opol.api.Api
+import opol.facades.ipc
+import opol.facades.ipc._
+import opol.util.AutowirePayload
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js.Dynamic.{global => g}

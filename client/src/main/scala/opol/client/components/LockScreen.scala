@@ -1,4 +1,4 @@
-package opl.client.components
+package opol.client.components
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -28,7 +28,8 @@ object LockScreen {
 
   val inputStyle = Seq(
     ^.padding := "1rem",
-    ^.fontSize := "3rem"
+    ^.fontSize := "3rem",
+    ^.autoFocus := true
   )
 
   val component =

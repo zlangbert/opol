@@ -1,4 +1,4 @@
-package opl.facades.ipc
+package opol.facades.ipc
 
 import scala.scalajs.js
 

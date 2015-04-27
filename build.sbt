@@ -62,6 +62,7 @@ val server = project.in(file("server"))
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
     libraryDependencies ++= Seq(
+      "org.scala-lang.modules" %% "scala-async" % "0.9.2",
       "com.lihaoyi" %%% "autowire" % "0.2.5",
       "com.lihaoyi" %%% "upickle" % "0.2.8"
     )
