@@ -64,6 +64,7 @@ val server = project.in(file("server"))
     libraryDependencies ++= Seq(
       "org.scala-lang.modules" %% "scala-async" % "0.9.2"
     ) ++ Dependencies.shared.value
+      ++ Dependencies.test.value
   )
 
 val client = project.in(file("client"))
@@ -76,4 +77,5 @@ val client = project.in(file("client"))
       "org.scala-js" %%% "scalajs-dom" % "0.9.1",
       "com.github.japgolly.scalajs-react" %%% "core" % "0.11.1"
     ) ++ Dependencies.shared.value
+      ++ Dependencies.test.value
   )

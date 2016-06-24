@@ -14,4 +14,8 @@ object Dependencies {
     "io.circe" %%% "circe-generic",
     "io.circe" %%% "circe-parser"
   ).map(_ % Versions.circe))
+
+  val test = Def.setting(Seq(
+    "org.scalatest" %%% "scalatest" % "3.0.0-RC3" % "test"
+  ))
 }
