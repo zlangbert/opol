@@ -6,6 +6,7 @@ import scala.concurrent.{Promise, Future}
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.global
 
+@js.native
 trait Crypto extends js.Object {
 
   def createHash(name: String): js.Dynamic = js.native

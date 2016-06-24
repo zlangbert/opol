@@ -2,6 +2,7 @@ package opol.client.components
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
+import org.scalajs.dom
 import org.scalajs.dom.html.Input
 
 object LockScreen {
@@ -14,6 +15,8 @@ object LockScreen {
 
     def onSubmit(e: ReactEventH)(implicit props: Props) = Callback {
       e.preventDefault()
+      dom.console.log(e.target)
+      dom.console.log(e.currentTarget)
       val pass = inputRef($).get.value
       if (pass.nonEmpty)
         props.onSubmit(pass)

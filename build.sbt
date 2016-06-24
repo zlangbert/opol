@@ -8,6 +8,8 @@ version in ThisBuild := "0.1.0-SNAPSHOT"
 
 scalaVersion in ThisBuild := "2.11.8"
 
+scalaJSUseRhino in Global := false
+
 val shared = project.in(file("shared"))
   .enablePlugins(ScalaJSPlugin)
 
@@ -22,25 +24,26 @@ val server = project.in(file("server"))
           Source.fromFile(f).mkString
         }
 
-        val bootstrap = """var addGlobalProps = function(obj) {
-                          |  obj.require = require;
-                          |  obj.__dirname = __dirname;
-                          |};
-                          |
-                          |if((typeof __ScalaJSEnv === "object") && typeof __ScalaJSEnv.global === "object") {
-                          |  addGlobalProps(__ScalaJSEnv.global);
-                          |} else if(typeof global === "object") {
-                          |  addGlobalProps(global);
-                          |} else if(typeof __ScalaJSEnv === "object") {
-                          |  __ScalaJSEnv.global = {};
-                          |  addGlobalProps(__ScalaJSEnv.global);
-                          |} else {
-                          |  var __ScalaJSEnv = { global: {} };
-                          |  addGlobalProps(__ScalaJSEnv.global)
-                          |}""".stripMargin
+        val bootstrap =
+          """var addGlobalProps = function(obj) {
+            |  obj.require = require;
+            |  obj.__dirname = __dirname;
+            |};
+            |
+            |if((typeof __ScalaJSEnv === "object") && typeof __ScalaJSEnv.global === "object") {
+            |  addGlobalProps(__ScalaJSEnv.global);
+            |} else if(typeof global === "object") {
+            |  addGlobalProps(global);
+            |} else if(typeof __ScalaJSEnv === "object") {
+            |  __ScalaJSEnv.global = {};
+            |  addGlobalProps(__ScalaJSEnv.global);
+            |} else {
+            |  var __ScalaJSEnv = { global: {} };
+            |  addGlobalProps(__ScalaJSEnv.global)
+            |}""".stripMargin
 
         val launcher =
-          read((artifactPath in (Compile, packageScalaJSLauncher)).value)
+          read((artifactPath in(Compile, packageScalaJSLauncher)).value)
 
         (fastOptJS in Compile).value.map { f =>
           val js = read(f)
@@ -64,7 +67,21 @@ val server = project.in(file("server"))
     libraryDependencies ++= Seq(
       "org.scala-lang.modules" %% "scala-async" % "0.9.2"
     ) ++ Dependencies.shared.value
-      ++ Dependencies.test.value
+      ++ Dependencies.test.value,
+    jsEnv in Test := Def.settingDyn {
+      NodeJSEnv(
+        env = Map(
+          "RESOURCE_PATH" -> {
+            val nodeModules = (resourceDirectory in Test).value
+            nodeModules.toPath.toAbsolutePath.toString
+          },
+          "NODE_PATH" -> {
+            val nodeModules = (resourceDirectory in Test).value / "node_modules"
+            nodeModules.toPath.toAbsolutePath.toString
+          }
+        )
+      )
+    }.value
   )
 
 val client = project.in(file("client"))

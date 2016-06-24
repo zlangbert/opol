@@ -6,7 +6,7 @@ import opol.facades.ipc._
 import opol.util.AutowirePayload
 
 import scala.scalajs.js.Dynamic.{global ⇒ g}
-import scala.scalajs.js.{JSApp, Dynamic ⇒ D}
+import scala.scalajs.js.{JSApp, Dynamic}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object Main extends JSApp {
@@ -15,7 +15,7 @@ object Main extends JSApp {
 
   val app = electron.app
   val BrowserWindow = electron.BrowserWindow
-  var mainWindow: Option[D] = None
+  var mainWindow: Option[Dynamic] = None
 
   def main(): Unit = {
 
@@ -25,7 +25,9 @@ object Main extends JSApp {
 
     app.on("ready", { () =>
       mainWindow = Some (
-        D.newInstance(BrowserWindow)(D.literal(width = 800, height = 600))
+        Dynamic.newInstance(BrowserWindow)(
+          Dynamic.literal(width = 1200, height = 1200)
+        )
       )
 
       mainWindow.foreach { window =>

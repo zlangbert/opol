@@ -5,6 +5,7 @@ import opol.facades.Buffer
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.global
 
+@js.native
 trait Fs extends js.Object {
 
   def readFileSync(filename: String): Buffer = js.native

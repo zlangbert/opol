@@ -1,0 +1,9 @@
+{
+  "name": "opol-test",
+  "version": "0.1.0",
+  "description": "server test dependencies",
+  "devDependencies": {
+    "memfs": "0.0.9",
+    "tar.gz": "^1.0.5"
+  }
+}

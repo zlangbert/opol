@@ -16,6 +16,7 @@ object Dependencies {
   ).map(_ % Versions.circe))
 
   val test = Def.setting(Seq(
-    "org.scalatest" %%% "scalatest" % "3.0.0-RC3" % "test"
+    "org.scalatest" %%% "scalatest" % "3.0.0-RC3" % "test",
+    "org.apache.commons" % "commons-compress" % "1.11" % "test"
   ))
 }
