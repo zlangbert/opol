@@ -1,5 +1,15 @@
 {
   "name"    : "your-app",
   "version" : "0.1.0",
-  "main"    : "server/target/scala-2.11/server-fastopt.js"
+  "main"    : "server/target/scala-2.11/server-fastopt.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zlangbert/opol.git"
+  },
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.0"
+  }
 }

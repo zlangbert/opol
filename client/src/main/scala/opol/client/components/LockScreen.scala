@@ -9,38 +9,40 @@ object LockScreen {
   case class Props(onSubmit: String => Unit)
 
   class Backend($: BackendScope[Props, _]) {
+
     val inputRef = Ref[Input]("input")
 
-    def onSubmit(e: ReactEventH): Unit = {
+    def onSubmit(e: ReactEventH)(implicit props: Props) = Callback {
       e.preventDefault()
-      val pass = inputRef($).get.getDOMNode().value
+      val pass = inputRef($).get.value
       if (pass.nonEmpty)
-        $.props.onSubmit(pass)
+        props.onSubmit(pass)
+    }
+
+    def render(implicit props: Props): ReactElement = {
+
+      val containerStyle = Seq(
+        ^.display := "flex",
+        ^.alignItems := "center",
+        ^.justifyContent := "center",
+        ^.height := "100%"
+      )
+
+      val inputStyle = Seq(
+        ^.padding := "1rem",
+        ^.fontSize := "3rem",
+        ^.autoFocus := true
+      )
+
+      <.form(containerStyle, ^.onSubmit ==> onSubmit,
+        <.input(^.ref := inputRef, ^.tpe := "password", inputStyle)
+      )
     }
   }
 
-  val containerStyle = Seq(
-    ^.display := "flex",
-    ^.alignItems := "center",
-    ^.justifyContent := "center",
-    ^.height := "100%"
-  )
-
-  val inputStyle = Seq(
-    ^.padding := "1rem",
-    ^.fontSize := "3rem",
-    ^.autoFocus := true
-  )
-
   val component =
     ReactComponentB[Props]("LockScreen")
-      .stateless
-      .backend(new Backend(_))
-      .render((props, _, backend) =>
-        <.form(containerStyle, ^.onSubmit ==> backend.onSubmit,
-          <.input(^.ref := backend.inputRef, ^.tpe := "password", inputStyle)
-        )
-      )
+      .renderBackend[Backend]
       .build
 
   def apply(onSubmit: String => Unit) =

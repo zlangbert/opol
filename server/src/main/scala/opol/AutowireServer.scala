@@ -1,13 +1,16 @@
 package opol
 
-import upickle._
+import io.circe._
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
 
-object AutowireServer extends autowire.Server[String, Reader, Writer] {
+object AutowireServer extends autowire.Server[String, Decoder, Encoder] {
 
-  def read[Result : Reader](p: String): Result = {
-    upickle.read[Result](p)
+  def read[Result : Decoder](p: String): Result = {
+    decode[Result](p).valueOr(e ⇒ throw e.getCause)
   }
-  def write[Result : Writer](r: Result): String = {
-    upickle.write(r)
+  def write[Result : Encoder](r: Result): String = {
+    r.asJson.noSpaces
   }
 }

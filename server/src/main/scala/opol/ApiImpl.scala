@@ -47,8 +47,14 @@ class ApiImpl extends Api {
 
   override def unlock(pass: String): Future[Boolean] = {
 
-    val keyData = Fs.readFile(ek)
-    val keys = upickle.read[EncryptionKeys](keyData)
+    val keys = {
+      val keyData = Fs.readFile(ek)
+      import io.circe._
+      import io.circe.generic.auto._
+      import io.circe.parser._
+      import io.circe.syntax._
+      decode[EncryptionKeys](keyData).valueOr(e ⇒ throw e.getCause)
+    }
 
     val authenticated = keys.list.forall { key =>
       val master = masterKey(pass, key)

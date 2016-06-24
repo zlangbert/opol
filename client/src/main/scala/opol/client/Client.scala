@@ -1,46 +1,39 @@
 package opol.client
 
-import java.util.UUID
-
+import io.circe._
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
+import opol.api.Channels
 import opol.client.facades.ipc._
+import opol.facades.ipc.Event
 import opol.util.AutowirePayload
-import upickle._
 
 import scala.concurrent.{Future, Promise}
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 
-object Client extends autowire.Client[String, upickle.Reader, upickle.Writer] {
+object Client extends autowire.Client[String, Decoder, Encoder] {
 
   override def doCall(req: Client.Request): Future[String] = {
 
     val promise = Promise[String]()
-    val id = UUID.randomUUID()
+    val payload = AutowirePayload(req.path, req.args)
 
-    val payload = AutowirePayload(id, req.path, req.args)
-
-    val complete: js.Function1[Any, _] = (data: Any) => {
+    val listener = (event: Event, data: js.Any) => {
       promise.success(data.asInstanceOf[String])
     }
 
-    Ipc.on(s"autowire.$id", complete)
-
-    Ipc.send("autowire", upickle.write(payload))
-
-    // remove listener that will never be used again
-    // TODO: this fails saying the "listener must be a function"
-    /*promise.future.onSuccess {
-      case _ => Ipc.removeListener(complete)
-    }*/
+    Ipc.once(Channels.Autowire, listener)
+    Ipc.send(Channels.Autowire, payload.asJson.noSpaces)
 
     promise.future
   }
 
-  override def write[Result: Writer](r: Result): String = {
-    upickle.write(r)
+  override def write[Result: Encoder](r: Result): String = {
+    r.asJson.noSpaces
   }
 
-  override def read[Result: Reader](p: String): Result = {
-    upickle.read[Result](p)
+  override def read[Result: Decoder](p: String): Result = {
+    decode[Result](p).valueOr(e ⇒ throw e.getCause)
   }
 }

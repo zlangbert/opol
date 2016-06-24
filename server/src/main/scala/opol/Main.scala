@@ -1,18 +1,20 @@
 package opol
 
-import opol.api.Api
+import opol.api.{Api, Channels}
 import opol.facades.ipc
 import opol.facades.ipc._
 import opol.util.AutowirePayload
 
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-import scala.scalajs.js.Dynamic.{global => g}
-import scala.scalajs.js.{Dynamic => D, JSApp}
+import scala.scalajs.js.Dynamic.{global ⇒ g}
+import scala.scalajs.js.{JSApp, Dynamic ⇒ D}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Main extends JSApp {
 
-  val app = g.require("app")
-  val BrowserWindow = g.require("browser-window")
+  val electron = g.require("electron")
+
+  val app = electron.app
+  val BrowserWindow = electron.BrowserWindow
   var mainWindow: Option[D] = None
 
   def main(): Unit = {
@@ -27,7 +29,7 @@ object Main extends JSApp {
       )
 
       mainWindow.foreach { window =>
-        window.loadUrl("file://" + g.__dirname +
+        window.loadURL("file://" + g.__dirname +
           "/../../../client/target/scala-2.11/classes/html/index.html")
         window.on("closed", { () =>
           mainWindow = None
@@ -36,14 +38,17 @@ object Main extends JSApp {
     })
 
     val api = new ApiImpl
-    Ipc.on("autowire", (event: ipc.Event, data: Any) => {
+    Ipc.on(Channels.Autowire, (event: ipc.Event, data: Any) => {
 
-        val payload = upickle.read[AutowirePayload](data.toString)
+        import io.circe.generic.auto._
+        import io.circe.parser._
+
+        val payload = decode[AutowirePayload](data.toString)
+          .valueOr(e ⇒ throw e.getCause)
 
         AutowireServer.route[Api](api)(
           autowire.Core.Request(payload.path, payload.args)
-        ).foreach(event.sender.send(s"autowire.${payload.id}", _))
-
+        ).foreach(event.sender.send(Channels.Autowire, _))
     })
   }
 }

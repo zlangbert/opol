@@ -6,7 +6,7 @@ name := "opol"
 
 version in ThisBuild := "0.1.0-SNAPSHOT"
 
-scalaVersion in ThisBuild := "2.11.6"
+scalaVersion in ThisBuild := "2.11.8"
 
 val shared = project.in(file("shared"))
   .enablePlugins(ScalaJSPlugin)
@@ -62,10 +62,8 @@ val server = project.in(file("server"))
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
     libraryDependencies ++= Seq(
-      "org.scala-lang.modules" %% "scala-async" % "0.9.2",
-      "com.lihaoyi" %%% "autowire" % "0.2.5",
-      "com.lihaoyi" %%% "upickle" % "0.2.8"
-    )
+      "org.scala-lang.modules" %% "scala-async" % "0.9.2"
+    ) ++ Dependencies.shared.value
   )
 
 val client = project.in(file("client"))
@@ -75,9 +73,7 @@ val client = project.in(file("client"))
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "0.8.0",
-      "com.github.japgolly.scalajs-react" %%% "core" % "0.8.3",
-      "com.lihaoyi" %%% "autowire" % "0.2.5",
-      "com.lihaoyi" %%% "upickle" % "0.2.8"
-    )
+      "org.scala-js" %%% "scalajs-dom" % "0.9.1",
+      "com.github.japgolly.scalajs-react" %%% "core" % "0.11.1"
+    ) ++ Dependencies.shared.value
   )

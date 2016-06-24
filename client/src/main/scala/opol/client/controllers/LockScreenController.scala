@@ -6,27 +6,28 @@ import opol.api.Api
 import opol.client.Client
 import opol.client.components.LockScreen
 
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.concurrent.ExecutionContext.Implicits._
 
 object LockScreenController {
 
-  case class State()
+  case class State(foo: String)
 
-  class Backend($: BackendScope[_, State]) {
+  class Backend($: BackendScope[_, _]) {
 
     def onSubmit(pass: String): Unit = {
       Client[Api].unlock(pass).call().foreach(println)
     }
+
+    def render(): ReactElement = {
+      LockScreen(onSubmit)
+    }
   }
 
   val component =
-    ReactComponentB[Unit]("LockScreenController")
-      .initialState(State())
-      .backend(new Backend(_))
-      .render((_, state, backend) =>
-        LockScreen(backend.onSubmit)
-      )
+    ReactComponentB[Unit]("Lock")
+      .initialState(State(""))
+      .renderBackend[Backend]
       .build
 
-  def apply() = component(())
+  def apply() = component()
 }
