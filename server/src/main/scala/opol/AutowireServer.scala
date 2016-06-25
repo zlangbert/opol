@@ -8,7 +8,7 @@ import io.circe.syntax._
 object AutowireServer extends autowire.Server[String, Decoder, Encoder] {
 
   def read[Result : Decoder](p: String): Result = {
-    decode[Result](p).valueOr(e ⇒ throw e.getCause)
+    decode[Result](p).valueOr(e ⇒ throw e)
   }
   def write[Result : Encoder](r: Result): String = {
     r.asJson.noSpaces

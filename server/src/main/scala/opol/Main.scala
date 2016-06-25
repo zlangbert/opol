@@ -46,7 +46,7 @@ object Main extends JSApp {
         import io.circe.parser._
 
         val payload = decode[AutowirePayload](data.toString)
-          .valueOr(e ⇒ throw e.getCause)
+          .valueOr(e ⇒ throw e)
 
         AutowireServer.route[Api](api)(
           autowire.Core.Request(payload.path, payload.args)

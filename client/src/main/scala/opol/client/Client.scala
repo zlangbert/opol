@@ -34,6 +34,6 @@ object Client extends autowire.Client[String, Decoder, Encoder] {
   }
 
   override def read[Result: Decoder](p: String): Result = {
-    decode[Result](p).valueOr(e ⇒ throw e.getCause)
+    decode[Result](p).valueOr(e ⇒ throw e)
   }
 }

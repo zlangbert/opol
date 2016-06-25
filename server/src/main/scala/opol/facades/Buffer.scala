@@ -18,12 +18,12 @@ class Buffer(size: Int) extends js.Object {
 @js.native
 object Buffer extends js.Object {
 
+  def from(data: String, encoding: String = "utf-8"): Buffer = js.native
+
   def concat(buffers: js.Array[Buffer]): Buffer = js.native
 }
 
 object BufferBuilder {
-  def apply(data: String, encoding: String): Buffer =
-    js.Dynamic.newInstance(
-      Buffer.asInstanceOf[js.Dynamic]
-    )(data, encoding).asInstanceOf[Buffer]
+
+  def base64(data: String): Buffer = Buffer.from(data, "base64")
 }

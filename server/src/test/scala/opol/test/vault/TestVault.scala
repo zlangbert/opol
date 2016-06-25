@@ -1,17 +1,21 @@
-package opol.test.crypto
+package opol.test.vault
 
 import opol.facades.Buffer
 
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic
 import scala.scalajs.js.Dynamic.global
 
 trait TestVault {
 
-  val vault = readVault()
+  private val vault = readVault("freddy-2013-12-04.tar.gz")
 
-  private def readVault(): Future[Dynamic] = {
+  def withVault[T](f: Dynamic => T)(implicit ec: ExecutionContext): Future[T] = {
+    vault.map(f)
+  }
+
+  private def readVault(filename: String): Future[Dynamic] = {
 
     val promise = Promise[Dynamic]()
 
@@ -32,7 +36,8 @@ trait TestVault {
       path.join(global.process.env.RESOURCE_PATH,
         "opol",
         "test",
-        "freddy-2013-12-04.tar.gz"))
+        filename))
+
     val parse = targz().createParseStream()
 
     parse.on("entry", (entry: Dynamic) => {

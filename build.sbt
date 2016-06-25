@@ -76,8 +76,11 @@ val server = project.in(file("server"))
             nodeModules.toPath.toAbsolutePath.toString
           },
           "NODE_PATH" -> {
-            val nodeModules = (resourceDirectory in Test).value / "node_modules"
-            nodeModules.toPath.toAbsolutePath.toString
+            val paths = Seq(
+              (resourceDirectory in Test).value / "node_modules",
+              baseDirectory.value / "node_modules"
+            )
+            paths.map(_.toPath.toAbsolutePath.toString).mkString(";")
           }
         )
       )

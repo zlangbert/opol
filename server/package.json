@@ -1,0 +1,8 @@
+{
+  "name": "opol-server",
+  "version": "0.1.0",
+  "description": "server dependencies",
+  "devDependencies": {
+    "bignum": "0.12.5"
+  }
+}
