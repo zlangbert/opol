@@ -10,10 +10,10 @@ scalaVersion in ThisBuild := "2.11.8"
 
 scalaJSUseRhino in Global := false
 
-val shared = project.in(file("shared"))
+lazy val shared = project.in(file("shared"))
   .enablePlugins(ScalaJSPlugin)
 
-val server = project.in(file("server"))
+lazy val server = project.in(file("server"))
   .enablePlugins(ScalaJSPlugin)
   .dependsOn(shared)
   .settings(
@@ -68,6 +68,7 @@ val server = project.in(file("server"))
       "org.scala-lang.modules" %% "scala-async" % "0.9.2"
     ) ++ Dependencies.shared.value
       ++ Dependencies.test.value,
+
     jsEnv in Test := Def.settingDyn {
       NodeJSEnv(
         env = Map(
@@ -87,7 +88,7 @@ val server = project.in(file("server"))
     }.value
   )
 
-val client = project.in(file("client"))
+lazy val client = project.in(file("client"))
   .enablePlugins(ScalaJSPlugin)
   .dependsOn(shared)
   .settings(

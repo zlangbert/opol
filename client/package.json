@@ -1,0 +1,10 @@
+{
+  "name": "opol-client",
+  "version": "0.1.0",
+  "description": "client dependencies",
+  "dependencies": {
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0",
+    "react-motion": "^0.4.4"
+  }
+}

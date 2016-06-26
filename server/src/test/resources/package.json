@@ -1,5 +1,5 @@
 {
-  "name": "opol-test",
+  "name": "opol-server-test",
   "version": "0.1.0",
   "description": "server test dependencies",
   "devDependencies": {
