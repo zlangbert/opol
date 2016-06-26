@@ -1,8 +1,25 @@
 package opol.vault
 
-class Vault {}
+class Vault[State <: Vault.State] {
+
+  import Vault.State._
+
+  def unlock()(implicit ev: State =:= Locked): Vault[Unlocked] = {
+    ???
+  }
+
+  def lock()(implicit ev: State =:= Unlocked): Vault[Unlocked] = {
+    ???
+  }
+}
 
 object Vault {
+
+  sealed trait State
+  object State {
+    sealed trait Locked extends State
+    sealed trait Unlocked extends State
+  }
 
   case class Profile(profileName: String,
                      lastUpdatedBy: String,

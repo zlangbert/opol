@@ -1,3 +1,15 @@
+* {
+    box-sizing: border-box;
+}
+
+*:focus {
+    outline: none;
+}
+
+html {
+    font-size: 62.5%;
+}
+
 html, body {
     height: 100%;
     margin: 0;

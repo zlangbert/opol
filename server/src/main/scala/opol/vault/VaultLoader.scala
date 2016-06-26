@@ -5,7 +5,7 @@ package opol.vault
   */
 class VaultLoader {
 
-  def load(): Vault = {
+  def load(path: String)(implicit fs: Nothing): Vault[Vault.State.Locked] = {
 
     ???
   }

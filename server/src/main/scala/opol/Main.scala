@@ -26,7 +26,7 @@ object Main extends JSApp {
     app.on("ready", { () =>
       mainWindow = Some (
         Dynamic.newInstance(BrowserWindow)(
-          Dynamic.literal(width = 1200, height = 1200)
+          Dynamic.literal(width = 1920, height = 1200)
         )
       )
 
