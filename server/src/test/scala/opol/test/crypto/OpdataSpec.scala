@@ -29,15 +29,14 @@ class OpdataSpec extends FlatSpec with Matchers {
     val plaintext = Opdata.decrypt(Buffer.from(ciphertext, "hex"), key, mac)
 
     val expected = Buffer.from(
-      "1b67a08f69b95ceba73c9522a3a9672e7343f737656e5f592bbb20" +
-      "3294b6ff6abda1c07ec766666d52f0cad6dd1d47acd39cd496dcc6" +
-      "6727947d0f3e8724a7331e81e090509bce4056f20a7e0b1f4bb38d" +
-      "d1f4e904b4996e8db79a1ed3b62b894cdca19c3029270bfdd9c6f5" +
-      "84ea0963da33696a01aabbdf1fb642a947c6f24d4d1ad9a75c5f16" +
-      "75b60a7c015cbc6e4b436a6a388cde22be4ba52b22bce666c235ed" +
-      "d6b86744870fd7da1609b2353c86c1c44aab8b9e3c9a2a44d3ee40" +
-      "13b5f188f4f5db96d8e997f977db077d3e9643c5a9c9cf71d0d024" +
-      "956fe8ed3e09c5567b58703293be488f720da7d03767e718", "hex")
+      "1b67a08f69b95ceba73c9522a3a9672e7343f737656e5f592bbb203294b6ff6a" +
+      "bda1c07ec766666d52f0cad6dd1d47acd39cd496dcc66727947d0f3e8724a733" +
+      "1e81e090509bce4056f20a7e0b1f4bb38dd1f4e904b4996e8db79a1ed3b62b89" +
+      "4cdca19c3029270bfdd9c6f584ea0963da33696a01aabbdf1fb642a947c6f24d" +
+      "4d1ad9a75c5f1675b60a7c015cbc6e4b436a6a388cde22be4ba52b22bce666c2" +
+      "35edd6b86744870fd7da1609b2353c86c1c44aab8b9e3c9a2a44d3ee4013b5f1" +
+      "88f4f5db96d8e997f977db077d3e9643c5a9c9cf71d0d024956fe8ed3e09c556" +
+      "7b58703293be488f720da7d03767e718bcb845890f223551bc51016064bc8ada", "hex")
 
     plaintext.equals(expected) shouldBe true
   }

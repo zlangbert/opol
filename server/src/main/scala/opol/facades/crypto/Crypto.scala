@@ -29,9 +29,4 @@ object Crypto {
              digest: String): Buffer = {
     Crypto().pbkdf2Sync(password, salt, iterations, keyLength, digest)
   }
-
-  def aesDecrypt(key: Buffer, iv: Buffer, data: Buffer, cipher: String): Buffer = {
-    val decipher = Crypto._crypto.createDecipheriv(cipher, key, iv)
-    decipher.update(data).asInstanceOf[Buffer]
-  }
 }

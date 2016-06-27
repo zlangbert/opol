@@ -1,8 +1,7 @@
 package opol.crypto
 
-import opol.facades.{Buffer, BufferBuilder}
+import opol.facades.Buffer
 import opol.facades.crypto.Crypto
-import opol.util.Node
 
 import scala.scalajs.js
 
@@ -33,11 +32,11 @@ object Opdata {
     if (ciphertext.length < MinimumLength)
       throw new InvalidOpdataDataException("cipher text is too short")
 
-    if (!verifyHmac(data, mac, macKey))
-      throw new InvalidOpdataDataException("HMAC verification failed")
-
     if (!verifyMetadata(ciphertext))
       throw new InvalidOpdataDataException("invalid metadata")
+
+    if (!verifyHmac(data, mac, macKey))
+      throw new InvalidOpdataDataException("HMAC verification failed")
 
     val payloadLength = getPayloadLength(data)
     val iv = data.slice(16, 32)
@@ -46,12 +45,8 @@ object Opdata {
     if (payload.length < payloadLength)
       throw new InvalidOpdataDataException("payload length did not match header")
 
-    val plaintext = {
-      val padded = Crypto.aesDecrypt(encryptionKey, iv, payload, cipher = "aes-256-cbc")
-      stripPadding(payloadLength, padded)
-    }
-
-    plaintext
+    val result = aesDecrypt(encryptionKey, iv, payload, cipher = "aes-256-cbc")
+    result.drop(result.length - payloadLength.toInt)
   }
 
   private def verifyHmac(data: Buffer, mac: Buffer, key: Buffer): Boolean = {
@@ -85,22 +80,12 @@ object Opdata {
     n.asInstanceOf[Int]
   }
 
-  /**
-    * Strips padding from decrypted plaintext
-    *
-    * If the data's length is a multiple of the block size (16 bytes),
-    * removes the first block of data. Otherwise throws for now
-    *
-    * @param plaintextLength length of plaintext
-    * @param padded padded data
-    * @return a slice of `data` without padding
-    */
-  private def stripPadding(plaintextLength: Long, padded: Buffer): Buffer = {
+  private def aesDecrypt(key: Buffer, iv: Buffer, data: Buffer, cipher: String): Buffer = {
+    val decipher = Crypto._crypto.createDecipheriv(cipher, key, iv)
+    decipher.setAutoPadding(false)
+    val a = decipher.update(data).asInstanceOf[Buffer]
+    val b = decipher.`final`().asInstanceOf[Buffer]
 
-    if (plaintextLength % 16 == 0) {
-      padded.drop(16)
-    } else {
-      throw new InvalidOpdataDataException("Unhandled payload length")
-    }
+    Buffer.concat(js.Array(a, b))
   }
 }
