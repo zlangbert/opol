@@ -1,8 +1,11 @@
 package opol.test.crypto
 
 import opol.crypto.Opdata
-import opol.facades.Buffer
+import opol.crypto.Opdata.InvalidOpdataDataException
+import opol.facades.{Buffer, BufferBuilder}
 import org.scalatest._
+
+import scala.util.Random
 
 class OpdataSpec extends FlatSpec with Matchers {
 
@@ -39,6 +42,32 @@ class OpdataSpec extends FlatSpec with Matchers {
       "7b58703293be488f720da7d03767e718bcb845890f223551bc51016064bc8ada", "hex")
 
     plaintext.equals(expected) shouldBe true
+  }
+
+  it should "throw on short data" in {
+
+    the [InvalidOpdataDataException] thrownBy {
+      Opdata.decrypt(Buffer.from("abc"), BufferBuilder.empty, BufferBuilder.empty)
+    } should have message "ciphertext too short"
+  }
+
+  it should "throw on invalid metadata" in {
+
+    val ciphertext = Buffer.from("abc123" + Random.nextString(512))
+
+    the [InvalidOpdataDataException] thrownBy {
+      Opdata.decrypt(ciphertext, BufferBuilder.empty, BufferBuilder.empty)
+    } should have message "invalid metadata"
+  }
+
+  it should "throw on HMAC verification failure" in {
+
+    val ciphertext = Buffer.from("opdata01" + Random.nextString(512))
+    val mac = Buffer.from("ff3ab426ce55bf097b252b3f2df1c4ba4312a6960180844d7a625bc0ab40c35e", "hex")
+
+    the [InvalidOpdataDataException] thrownBy {
+      Opdata.decrypt(ciphertext, BufferBuilder.empty, mac)
+    } should have message "HMAC verification failed"
   }
 }
 

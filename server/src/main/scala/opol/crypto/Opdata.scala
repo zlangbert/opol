@@ -30,7 +30,7 @@ object Opdata {
     val mac = ciphertext.takeRight(MacSize)
 
     if (ciphertext.length < MinimumLength)
-      throw new InvalidOpdataDataException("cipher text is too short")
+      throw new InvalidOpdataDataException("ciphertext too short")
 
     if (!verifyMetadata(ciphertext))
       throw new InvalidOpdataDataException("invalid metadata")
