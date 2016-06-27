@@ -1,22 +1,27 @@
 package opol.test.vault
 
-import opol.crypto.Opdata
-import opol.facades.BufferBuilder
-import opol.facades.crypto.Crypto
-import opol.util.JavascriptVirtualMachine
-import opol.vault.Vault
+import opol.vault.VaultLoader
 import org.scalatest._
 
-import scala.scalajs.js.JSON
+import scala.concurrent.ExecutionContext
+import scala.async.Async._
 
 class VaultLoaderSpec extends AsyncFlatSpec with Matchers with TestVault {
 
-  implicit override def executionContext =
+  override implicit def executionContext: ExecutionContext =
     scala.concurrent.ExecutionContext.Implicits.global
 
-  "VaultLoader" should "work" in {
-    withVault { vault =>
-      val profileFile = vault.readFileSync("./onepassword_data/default/profile.js").toString
+  "VaultLoader" should "load a vault" in async {
+
+    implicit val fs = await { vaultFs }
+    val loader = new VaultLoader("freddy.opvault")
+    val vault = await { loader.load() }
+
+    vault.isLocked should be (true)
+  }
+
+  /*withVault { vault =>
+      val profileFile = vault.readFileSync("./freddy.opvault/default/profile.js").toString
       profileFile should not be empty
 
       val vm = new JavascriptVirtualMachine
@@ -41,9 +46,30 @@ class VaultLoaderSpec extends AsyncFlatSpec with Matchers with TestVault {
       val derivedKey = result.slice(0, 32)
       val derivedMac = result.slice(32)
 
-      val r = Opdata.decrypt(masterKey, derivedKey, derivedMac)
+      /*val r = Opdata.decrypt(masterKey, derivedKey, derivedMac)
+      r.toString("hex") should not be empty*/
 
-      r.toString("hex") should not be empty
-    }
-  }
+      val (overviewKey, overviewMac) = {
+        val plaintext = Opdata.decrypt(BufferBuilder.base64(profile.overviewKey), derivedKey, derivedMac)
+        val hasher = Crypto().createHash("sha512")
+        val hashed = hasher.update(plaintext).digest().asInstanceOf[Buffer]
+
+        hashed.take(32) -> hashed.takeRight(32)
+      }
+
+      val o = {
+
+        val file = vault.readFileSync("./freddy.opvault/default/band_F.js").toString
+            .drop(3).dropRight(2)
+        val json = io.circe.parser.parse(file).valueOr(e => throw e)
+
+        val s = json.asObject.get.toMap.values.drop(5).head.asObject.get("o").get.asString.get
+        BufferBuilder.base64(s)
+      }
+
+      val r = Opdata.decrypt(o, overviewKey, overviewMac)
+      Node.log(r)
+
+      succeed
+    }*/
 }

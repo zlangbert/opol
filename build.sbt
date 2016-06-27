@@ -65,7 +65,7 @@ lazy val server = project.in(file("server"))
     persistLauncher in Compile := true,
     persistLauncher in Test := false,
     libraryDependencies ++= Seq(
-      "org.scala-lang.modules" %% "scala-async" % "0.9.2"
+      "org.scala-lang.modules" %% "scala-async" % "0.9.6-RC2"
     ) ++ Dependencies.shared.value
       ++ Dependencies.test.value,
 

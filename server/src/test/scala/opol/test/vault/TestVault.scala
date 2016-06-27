@@ -1,68 +1,67 @@
 package opol.test.vault
 
 import opol.facades.Buffer
+import opol.facades.fs.Fs
+import opol.facades.path.Path
+import opol.facades.stream.StreamWriteable
+import opol.test.helpers.VirtualFs
+import opol.util.Node
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic
 import scala.scalajs.js.Dynamic.global
 
-trait TestVault {
+trait TestVault extends VirtualFs {
 
-  private val vault = readVault("freddy-2013-12-04.tar.gz")
+  val vaultFs = readVault("freddy-2013-12-04.tar.gz")
 
-  def withVault[T](f: Dynamic => T)(implicit ec: ExecutionContext): Future[T] = {
-    vault.map(f)
+  def withVault[T](f: Fs => T)(implicit ec: ExecutionContext): Future[T] = {
+    vaultFs.map(f)
   }
 
-  private def readVault(filename: String): Future[Dynamic] = {
+  private def readVault(filename: String): Future[Fs] = {
+    withFs { implicit fs =>
 
-    val promise = Promise[Dynamic]()
+      val promise = Promise[Fs]()
 
-    val require = global.require
+      val targz = Node.require("tar.gz")
 
-    val path = require("path")
-    val fs = require("fs")
-    val targz = require("tar.gz")
-    val memfs = require("memfs")
+      val read = Fs().createReadStream(
+        Path().join(
+          global.process.env.RESOURCE_PATH.asInstanceOf[String],
+          "opol",
+          "test",
+          filename
+        )
+      )
 
-    val fileSystem = {
-      val mem = Dynamic.newInstance(memfs.Volume)()
-      mem.mountSync("./")
-      mem
+      val parse = targz().createParseStream().asInstanceOf[StreamWriteable]
+
+      parse.on("entry", (entry: Dynamic) => {
+        if (entry.`type`.asInstanceOf[String] == "File") {
+          writeEntry(entry)
+        }
+      })
+      parse.on("end", () => {
+        promise.success(fs)
+      })
+
+      read.pipe(parse)
+
+      promise.future
     }
-
-    val read = fs.createReadStream(
-      path.join(global.process.env.RESOURCE_PATH,
-        "opol",
-        "test",
-        filename))
-
-    val parse = targz().createParseStream()
-
-    parse.on("entry", (entry: Dynamic) => {
-      if (entry.`type`.asInstanceOf[String] == "File") {
-        writeEntry(fileSystem, entry)
-      }
-    })
-
-    parse.on("end", () => {
-      promise.success(fileSystem)
-    })
-
-    read.pipe(parse)
-
-    promise.future
   }
 
-  private def writeEntry(fileSystem: Dynamic, entry: js.Dynamic): Unit = {
+  private def writeEntry(entry: js.Dynamic)(implicit fs: Fs): Unit = {
     val buffers = js.Array[Buffer]()
     entry.on("data", (data: Dynamic) => {
       buffers.push(data.asInstanceOf[Buffer])
     })
     entry.on("end", () => {
+      val path = entry.path.asInstanceOf[String]
       val data = Buffer.concat(buffers)
-      fileSystem.writeFileSync(entry.path, data)
+      fs.writeFileSync(path, data)
     })
   }
 }
